@@ -36,26 +36,19 @@
         </div>
         <div data-current="Tab 1" data-easing="ease" data-duration-in="300" data-duration-out="100" class="w-tabs">
             <div class="w-tab-menu">
-                <a data-w-tab="Tab 1" class="w-inline-block w-tab-link w--current">
-                    <div>Proyecto 1</div>
+                {% for i in range(num_projects) %}
+                <a data-w-tab="Tab {{ i+1 }}" class="w-inline-block w-tab-link {% if i == 0 %}w--current{% endif %}">
+                    <div>Proyecto {{ i+1 }}</div>
                 </a>
-                <a data-w-tab="Tab 2" class="w-inline-block w-tab-link">
-                    <div>Proyecto 2</div>
-                </a>
-                <a data-w-tab="Tab 3" class="w-inline-block w-tab-link">
-                    <div>Proyecto 3</div>
-                </a>
+                {% endfor %}
+                <form method="POST" action="{{ url_for('add_tab') }}"><button type="submit">Agregar Tab</button></form>
             </div>
             <div class="w-tab-content">
-                <div data-w-tab="Tab 1" class="w-tab-pane w--tab-active">
-                    <iframe src="{{ url_for('tables1') }}" style="width:100%; height:500px;"></iframe>
+                {% for i in range(num_projects) %}
+                <div data-w-tab="Tab {{ i+1 }}" class="w-tab-pane {% if i == 0 %}w--tab-active{% endif %}">
+                    <iframe src="{{ url_for('tables', project_number=i+1) }}" style="width:100%; height:500px;"></iframe>
                 </div>
-                <div data-w-tab="Tab 2" class="w-tab-pane">
-                    <iframe src="{{ url_for('tables2') }}" style="width:100%; height:500px;"></iframe>
-                </div>
-                <div data-w-tab="Tab 3" class="w-tab-pane">
-                    <iframe src="{{ url_for('tables3') }}" style="width:100%; height:500px;"></iframe>
-                </div>
+                {% endfor %}
             </div>
         </div>
         <script src="https://d3e54v103j8qbb.cloudfront.net/js/jquery-3.5.1.min.dc5e7f18c8.js?site=6413bfb09d689f2db308c738" type="text/javascript" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous">
@@ -69,6 +62,59 @@
 
             </script>
         <![endif]-->
+        <script>
+            function addTab() {
+            // get the number of current tabs
+            var tabCount = $("#tabs ul li").length;
+
+            // add a new tab
+            var newTab = $("<li><a href='#tabs-" + (tabCount+1) + "'>New Tab</a></li>");
+            $("#tabs ul").append(newTab);
+
+            // add the new tab content
+            var newTabContent = $("<div id='tabs-" + (tabCount+1) + "'></div>");
+            newTabContent.html("<iframe src='" + "{{ url_for('tables', project_number=" + (tabCount+1) + ") }}" + "' style='width:100%; height:500px;'></iframe>");
+            $("#tabs").append(newTabContent);
+
+            // refresh the tabs
+            $("#tabs").tabs("refresh");
+  }
+            // obtén la lista de mini tabs y su contenido
+            var tabList = document.querySelector('.w-tab-menu');
+            var tabContent = document.querySelector('.w-tab-content');
+
+            // cuenta el número de mini tabs existentes
+            var tabCount = tabList.children.length;
+
+            // obtén el botón "Agregar proyecto"
+            var addTabButton = document.querySelector('button[type="submit"]');
+
+            // escucha el evento click del botón "Agregar proyecto"
+            addTabButton.addEventListener('click', function() {
+            // crea un nuevo elemento para la mini tab
+            var newTab = document.createElement('a');
+            newTab.setAttribute('data-w-tab', 'Tab ' + (tabCount + 1));
+            newTab.setAttribute('class', 'w-inline-block w-tab-link');
+            tabList.appendChild(newTab);
+
+            // crea el contenido de la mini tab
+            var newTabContent = document.createElement('div');
+            newTabContent.setAttribute('data-w-tab', 'Tab ' + (tabCount + 1));
+            newTabContent.setAttribute('class', 'w-tab-pane');
+            tabContent.appendChild(newTabContent);
+
+            // agrega el título a la mini tab
+            newTab.innerHTML = '<div>Proyecto ' + (tabCount + 1) + '</div>';
+
+            // agrega el contenido a la mini tab
+            newTabContent.innerHTML = '<iframe src="{{ url_for('tables', project_number=' + (tabCount + 1) + ') }}" style="width:100%; height:500px;"></iframe>';
+  
+            // incrementa el contador de mini tabs
+            tabCount++;
+            });
+
+          </script>
+          
     </body>
 
 {% endblock %}
