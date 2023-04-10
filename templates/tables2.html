@@ -19,7 +19,7 @@ $('#agregarFila').click(function() {
   var data = table.data().toArray();
   $.ajax({
     type: "POST",
-    url: "/update_df1",
+    url: "/update_df12",
     data: JSON.stringify(data),
     contentType: 'application/json;charset=UTF-8',
     success: function(response) {
@@ -31,10 +31,10 @@ $('#agregarFila').click(function() {
   });
 
 
-  /////update df4
+  /////update df42
   $.ajax({
           type: "POST",
-          url: "/recalculate_df4",
+          url: "/recalculate_df42",
           success: function(response) {
             console.log(response);
             // Extract the data from the response JSON string
@@ -65,7 +65,7 @@ $('#agregarFila').click(function() {
     <script>
       $(document).ready(function() {
         // Initialize all tables
-        {% for i in range(dataframes|length) %}
+        {% for i in range(dataframes2|length) %}
           var table{{ i+1 }} = $('#myTable{{ i+1 }}').DataTable({
             //"pagingType": "full_numbers",
             //"dom": "<'row'<'col-sm-12'tr>>",
@@ -90,7 +90,7 @@ $('#agregarFila').click(function() {
       // Send updated data to server
       $.ajax({
         type: "POST",
-        url: "/update_cell",
+        url: "/update_cell2",
         data: JSON.stringify(data),
         contentType: 'application/json;charset=UTF-8',
         success: function(response) {
@@ -101,11 +101,11 @@ $('#agregarFila').click(function() {
         }
       });
       /// end update data to server
-            //update df4
+            //update df42
 
             $.ajax({
           type: "POST",
-          url: "/recalculate_df4",
+          url: "/recalculate_df42",
           success: function(response) {
             console.log(response);
             // Extract the data from the response JSON string
@@ -114,7 +114,7 @@ $('#agregarFila').click(function() {
               return Object.values(row);
             });
 
-            // Update the table with the new values in df4
+            // Update the table with the new values in df42
             var table = $('#myTable4').DataTable();
             table.clear();
             table.rows.add(newRows);
@@ -140,18 +140,18 @@ $('#agregarFila').click(function() {
         <p>Da click sobre la tabla para modificar el valor de la celda.</p>
         <br><br>
         <button id="agregarFila">Agregar Fila</button>
-        {% for i in range(dataframes|length) %}
+        {% for i in range(dataframes2|length) %}
         <h2 id="title{{i+1}}">{{titles[i]}}</h2>
           <table id="myTable{{ i+1 }}" class="display" style="width: 100%;">
             <thead>
               <tr>
-                {% for column in dataframes[i].columns %}
+                {% for column in dataframes2[i].columns %}
                   <th>{{ column }}</th>
                 {% endfor %}
               </tr>
             </thead>
             <tbody>
-              {% for index, row in dataframes[i].iterrows() %}
+              {% for index, row in dataframes2[i].iterrows() %}
                 <tr>
                   {% for value in row %}
                     <td>{{ value }}</td>
