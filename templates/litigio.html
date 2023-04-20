@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar nuevo litigio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        button {
+            font-size: 1rem;
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .dropdown {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .dropdown ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .dropdown li {
+            padding: 12px 16px;
+            cursor: pointer;
+        }
+
+        .dropdown li:hover {
+            background-color: #f1f1f1;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <button id="agregarLitigioBtn">Agrega nuevo litigio</button>
+    <div id="dropdownMenu" class="dropdown">
+        <ul>
+            <li>Puebla</li>
+            <li>México</li>
+            <li>Mérida</li>
+        </ul>
+    </div>
+    <p id="estadoSeleccionado"></p>
+    <p id="idLitigio"></p>
+    <p id="bufeteSeleccionado"></p>
+    <button id="asignarBtn">Asignar</button>
+ <h2>Historico de asignaciones</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID de litigio</th>
+                <th>Estado</th>
+                <th>Bufete</th>
+                <th>Número de juicios asignados</th>
+            </tr>
+        </thead>
+        <tbody id="tablaLitigios">
+        </tbody>
+    </table>
+
+<H2>Total de Juicios Asignados por Bufete</H2>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+
+
+
+<table>
+    <thead>
+        <tr>
+            <th>Bufete</th>
+            <th>Estado</th>
+            <th>Total de Juicios Asignados</th>
+        </tr>
+    </thead>
+    <tbody id="tablaAcumulado">
+    </tbody>
+</table>
+
+
+
+
+<h2>Directorio de buffetes</h2>
+
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Bufete</th>
+                <th>Ubicación</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>LexGlobal Consultores</td>
+                <td>Puebla</td>
+            </tr>
+            <tr>
+                <td>Justicia y Aliados</td>
+                <td>México</td>
+            </tr>
+            <tr>
+                <td>Soluciones Legales Integrales</td>
+                <td>Mérida</td>
+            </tr>
+            <tr>
+                <td>Abogados Unidos</td>
+                <td>Puebla</td>
+            </tr>
+            <tr>
+                <td>Firma Jurídica Excelencia</td>
+                <td>México</td>
+            </tr>
+            <tr>
+                <td>Defensores Legales Puebla</td>
+                <td>Puebla</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const agregarLitigioBtn = document.getElementById('agregarLitigioBtn');
+    const asignarBtn = document.getElementById('asignarBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const estadoSeleccionado = document.getElementById('estadoSeleccionado');
+    const idLitigio = document.getElementById('idLitigio');
+    const bufeteSeleccionado = document.getElementById('bufeteSeleccionado');
+    const tablaLitigios = document.getElementById('tablaLitigios');
+    const estados = document.querySelectorAll('#dropdownMenu li');
+    const tablaAcumulado = document.getElementById('tablaAcumulado');
+    const bufetes = [
+        { nombre: 'LexGlobal Consultores', ubicacion: 'Puebla', juiciosAsignados: 0 },
+        { nombre: 'Justicia y Aliados', ubicacion: 'México', juiciosAsignados: 0 },
+        { nombre: 'Soluciones Legales Integrales', ubicacion: 'Mérida', juiciosAsignados: 0 },
+        { nombre: 'Abogados Unidos', ubicacion: 'Puebla', juiciosAsignados: 0 },
+        { nombre: 'Firma Jurídica Excelencia', ubicacion: 'México', juiciosAsignados: 0 },
+        { nombre: 'Defensores Legales Puebla', ubicacion: 'Puebla', juiciosAsignados: 0 }
+    ];
+
+    function generarIdAleatorio(estado) {
+        const caracteres = '0123456789';
+        const longitud = 4;
+        let resultado = '';
+
+        for (let i = 0; i < longitud; i++) {
+            resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+        }
+
+        return `${estado}LIT${resultado}`;
+    }
+
+    function seleccionarBufeteAleatorio(estado) {
+        const bufetesFiltrados = bufetes.filter(bufete => bufete.ubicacion === estado);
+        return bufetesFiltrados[Math.floor(Math.random() * bufetesFiltrados.length)];
+    }
+
+    function agregarLitigioATabla(id, estado, bufete) {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${id}</td>
+            <td>${estado}</td>
+            <td>${bufete.nombre}</td>
+            <td>${bufete.juiciosAsignados}</td>
+        `;
+        tablaLitigios.appendChild(fila);
+
+        // Actualizar tabla de bufetes
+        actualizarTablaBufetes();
+    }
+
+    function actualizarTablaBufetes() {
+    // Obtener total de juicios asignados por bufete y estado
+    const juiciosPorBufete = {};
+    bufetes.forEach(bufete => {
+        const key = `${bufete.nombre}-${bufete.ubicacion}`;
+        if (!juiciosPorBufete[key]) {
+            juiciosPorBufete[key] = { total: 0, ubicacion: bufete.ubicacion };
+        }
+        juiciosPorBufete[key].total += bufete.juiciosAsignados;
+    });
+
+    // Actualizar tabla de bufetes
+    tablaAcumulado.innerHTML = '';
+    Object.keys(juiciosPorBufete).forEach(key => {
+        const bufete = key.split('-')[0];
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td>${bufete}</td>
+            <td>${juiciosPorBufete[key].ubicacion}</td>
+            <td>${juiciosPorBufete[key].total}</td>
+        `;
+        tablaAcumulado.appendChild(fila);
+    });
+}
+
+
+    agregarLitigioBtn.addEventListener('click', () => {
+        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none'
+        : 'block';
+});
+
+document.addEventListener('click', (event) => {
+    if (!agregarLitigioBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
+        dropdownMenu.style.display = 'none';
+    }
+});
+
+estados.forEach(estado => {
+    estado.addEventListener('click', () => {
+        const estadoTexto = estado.textContent;
+        estadoSeleccionado.textContent = `Estado seleccionado: ${estadoTexto}`;
+        idLitigio.textContent = `ID de litigio: ${generarIdAleatorio(estadoTexto)}`;
+        const bufeteAleatorio = seleccionarBufeteAleatorio(estadoTexto);
+        bufeteSeleccionado.textContent = `Bufete seleccionado: ${bufeteAleatorio.nombre}`;
+        dropdownMenu.style.display = 'none';
+    });
+});
+
+asignarBtn.addEventListener('click', () => {
+    const id = idLitigio.textContent.replace('ID de litigio: ', '');
+    const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
+    const bufete = bufetes.find(b => b.nombre === bufeteSeleccionado.textContent.replace('Bufete seleccionado: ', ''));
+
+    if (id && estado && bufete) {
+        bufete.juiciosAsignados++;
+        agregarLitigioATabla(id, estado, bufete);
+    } else {
+        alert('Por favor, seleccione un estado y genere un ID de litigio antes de asignar.');
+    }
+});
+
+
+// Actualizar tabla de bufetes al cargar la página
+actualizarTablaBufetes();
+
+
+
+
+
+});
+    </script>
+</body>
+</html>
+
+{% endblock %}
