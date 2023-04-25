@@ -193,11 +193,19 @@
         return `${estado}LIT${resultado}`;
     }
 
+    //function seleccionarBufeteAleatorio(estado) {
+    //    const bufetesFiltrados = bufetes.filter(bufete => bufete.ubicacion === estado);
+    //    return bufetesFiltrados[Math.floor(Math.random() * bufetesFiltrados.length)];
+    //}
     function seleccionarBufeteAleatorio(estado) {
-        const bufetesFiltrados = bufetes.filter(bufete => bufete.ubicacion === estado);
-        return bufetesFiltrados[Math.floor(Math.random() * bufetesFiltrados.length)];
-    }
-
+    fetch(`/select_bufete?location=${estado}`)
+        .then(response => response.json())
+        .then(bufete => {
+            console.log(bufete); // Add this line to see the returned JSON object
+            bufeteSeleccionado.textContent = `Bufete seleccionado: ${bufete.nombre}`;
+        })
+        .catch(error => console.log(error));
+}
     function agregarLitigioATabla(id, estado, bufete) {
         const fila = document.createElement('tr');
         fila.innerHTML = `
@@ -260,6 +268,18 @@ estados.forEach(estado => {
     });
 });
 
+//asignarBtn.addEventListener('click', () => {
+//    const id = idLitigio.textContent.replace('ID de litigio: ', '');
+//    const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
+//    const bufete = bufetes.find(b => b.nombre === bufeteSeleccionado.textContent.replace('Bufete seleccionado: ', ''));
+//
+//    if (id && estado && bufete) {
+//        bufete.juiciosAsignados++;
+//        agregarLitigioATabla(id, estado, bufete);
+//    } else {
+//        alert('Por favor, seleccione un estado y genere un ID de litigio antes de asignar.');
+//    }
+//});
 asignarBtn.addEventListener('click', () => {
     const id = idLitigio.textContent.replace('ID de litigio: ', '');
     const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
@@ -268,10 +288,17 @@ asignarBtn.addEventListener('click', () => {
     if (id && estado && bufete) {
         bufete.juiciosAsignados++;
         agregarLitigioATabla(id, estado, bufete);
+
+        // Clear generated data
+        estadoSeleccionado.textContent = '';
+        idLitigio.textContent = '';
+        bufeteSeleccionado.textContent = '';
     } else {
         alert('Por favor, seleccione un estado y genere un ID de litigio antes de asignar.');
     }
-});
+}
+);
+
 
 
 // Actualizar tabla de bufetes al cargar la página
