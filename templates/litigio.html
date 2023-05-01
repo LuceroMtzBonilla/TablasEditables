@@ -181,6 +181,28 @@
         { nombre: 'Defensores Legales Puebla', ubicacion: 'Puebla', juiciosAsignados: 0 }
     ];
 
+    function asignarLitigio() {
+        const location = document.getElementById("location").value;
+        const litigio_id = document.getElementById("litigio_id").value;
+        const data = { location: location, litigio_id: litigio_id };
+
+        fetch('/ruleta', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Resto del código para manejar la respuesta de la ruta
+        })
+        .catch(error => console.error(error));
+    }
+
+    // Agrega el evento click al botón asignar
+    asignarBtn.addEventListener('click', asignarLitigio);
+
     function generarIdAleatorio(estado) {
         const caracteres = '0123456789';
         const longitud = 4;
