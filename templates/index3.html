@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Filtrar frutas</title>
+</head>
+<body>
+	<h1>Filtrar frutas</h1>
+
+	<form method="post" action="/resultados">
+		<label for="tipo">Tipo de fruta:</label>
+		<select id="tipo" name="tipo">
+			<option value="">Cualquier tipo</option>
+			{% for tipo in tipos_fruta %}
+				<option value="{{ tipo }}">{{ tipo }}</option>
+			{% endfor %}
+		</select>
+
+		<br>
+
+		<label for="precio">Precio:</label>
+		<select id="precio" name="precio">
+			<option value="">Cualquier precio</option>
+			{% for precio in precios %}
+				<option value="{{ precio }}">{{ precio }}</option>
+			{% endfor %}
+		</select>
+
+		<br><br>
+
+		<input type="submit" value="Filtrar">
+	</form>
+
+	<br>
+
+	<table border="1">
+		<thead>
+			<tr>
+				<th>Nombre</th>
+				<th>Tipo</th>
+				<th>Precio</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for fruta in frutas %}
+				<tr>
+					<td>{{ fruta["nombre"] }}</td>
+					<td>{{ fruta["tipo"] }}</td>
+					<td>{{ fruta["precio"] }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</body>
+</html>
