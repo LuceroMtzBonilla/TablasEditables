@@ -83,7 +83,16 @@
             </tr>
         </thead>
         <tbody id="tablaLitigios">
-        </tbody>
+            {% for bufete, data in litigios_por_bufete.items() %}
+                {% set acumulado = acumulado_por_bufete[bufete] %}
+                <tr>
+                    <td>{{ data['id'] }}</td>
+                    <td>{{ data['estado'] }}</td>
+                    <td>{{ bufete }}</td>
+                    <td>{{ acumulado['total_juicios_asignados'] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>        
     </table>
 
 <H2>Total de Juicios Asignados por Bufete</H2>

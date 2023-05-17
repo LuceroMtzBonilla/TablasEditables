@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<head>
+  <title>Selección de Sucursal y Horario</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(function() {
+      // Cuando se selecciona una nueva sucursal
+      $('.sucursal-selector').change(function() {
+        var url = $(this).children('option:selected').data('url-horarios');
+
+        // Realiza una llamada AJAX al endpoint Flask que devuelve los horarios
+        $.ajax({
+          url: url,
+          success: function(data) {
+            // Actualiza el selector de horario con las opciones correspondientes
+            var horarioSelector = $('.horario-selector');
+            horarioSelector.empty();
+            $.each(data.horarios, function(key, value) {
+              horarioSelector.append('<option value="' + value + '"> ' + value + '</option>');
+            });
+          }
+        });
+      });
+
+      // Cuando se selecciona una nueva ubicación
+      $('.ubicacion-selector').change(function() {
+        var url = $(this).children('option:selected').data('url-sucursales');
+
+        // Realiza una llamada AJAX al endpoint Flask que devuelve las sucursales
+        $.ajax({
+          url: url,
+          success: function(data) {
+            // Actualiza el selector de sucursal con las opciones correspondientes
+            var sucursalSelector = $('.sucursal-selector');
+            sucursalSelector.empty();
+            $.each(data.sucursales, function(key, value) {
+              sucursalSelector.append('<option value="' + value + '" data-url-horarios="' + data.url_horarios + '"> ' + value + '</option>');
+            });
+            sucursalSelector.trigger('change');
+          }
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <label for="ubicacion">Ubicación:</label>
+  <select name="ubicacion" id="ubicacion" class="ubicacion-selector">
+    <option value="Mexico" data-url-sucursales="{{ url_for('sucursales', ubicacion='Mexico') }}">México</option>
+    <option value="Puebla" data-url-sucursales="{{ url_for('sucursales', ubicacion='Puebla') }}">Puebla</option>
+    <option value="Merida" data-url-sucursales="{{ url_for('sucursales', ubicacion='Merida') }}">Mérida</option>
+  </select>
+
+  <label for="sucursal">Sucursal:</label>
+  <select name="sucursal" id="sucursal" class="sucursal-selector">
+  </select>
+
+  <label for="horario">Horario:</label>
+  <select name="horario" id="horario" class="horario-selector">
+  </select>
+</body>
+</html>
+
+
+{% endblock %}
