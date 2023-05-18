@@ -7,15 +7,12 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script>
     $(function() {
-      // Cuando se selecciona una nueva sucursal
       $('.sucursal-selector').change(function() {
         var url = $(this).children('option:selected').data('url-horarios');
 
-        // Realiza una llamada AJAX al endpoint Flask que devuelve los horarios
         $.ajax({
           url: url,
           success: function(data) {
-            // Actualiza el selector de horario con las opciones correspondientes
             var horarioSelector = $('.horario-selector');
             horarioSelector.empty();
             $.each(data.horarios, function(key, value) {
@@ -25,15 +22,12 @@
         });
       });
 
-      // Cuando se selecciona una nueva ubicación
       $('.ubicacion-selector').change(function() {
         var url = $(this).children('option:selected').data('url-sucursales');
 
-        // Realiza una llamada AJAX al endpoint Flask que devuelve las sucursales
         $.ajax({
           url: url,
           success: function(data) {
-            // Actualiza el selector de sucursal con las opciones correspondientes
             var sucursalSelector = $('.sucursal-selector');
             sucursalSelector.empty();
             $.each(data.sucursales, function(key, value) {
@@ -63,6 +57,5 @@
   </select>
 </body>
 </html>
-
 
 {% endblock %}
