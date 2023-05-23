@@ -205,6 +205,24 @@
 
     asignarBtn.addEventListener('click', asignarLitigio);
 
+    asignarBtn.addEventListener('click', () => {
+    const id = idLitigio.textContent.replace('ID de litigio: ', '');
+    const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
+    const bufete = bufetes.find(b => b.nombre === bufeteSeleccionado.textContent.replace('Bufete seleccionado: ', ''));
+
+    if (id && estado && bufete) {
+        bufete.juiciosAsignados++;
+        agregarLitigioATabla(id, estado, bufete);
+
+        estadoSeleccionado.textContent = '';
+        idLitigio.textContent = '';
+        bufeteSeleccionado.textContent = '';
+    } else {
+        alert('Por favor, seleccione un estado y genere un ID de litigio antes de asignar.');
+    }
+}
+);
+
     function generarIdAleatorio(estado) {
         const caracteres = '0123456789';
         const longitud = 4;
@@ -284,23 +302,7 @@ estados.forEach(estado => {
     });
 });
 
-asignarBtn.addEventListener('click', () => {
-    const id = idLitigio.textContent.replace('ID de litigio: ', '');
-    const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
-    const bufete = bufetes.find(b => b.nombre === bufeteSeleccionado.textContent.replace('Bufete seleccionado: ', ''));
 
-    if (id && estado && bufete) {
-        bufete.juiciosAsignados++;
-        agregarLitigioATabla(id, estado, bufete);
-
-        estadoSeleccionado.textContent = '';
-        idLitigio.textContent = '';
-        bufeteSeleccionado.textContent = '';
-    } else {
-        alert('Por favor, seleccione un estado y genere un ID de litigio antes de asignar.');
-    }
-}
-);
 
 actualizarTablaBufetes();
 
