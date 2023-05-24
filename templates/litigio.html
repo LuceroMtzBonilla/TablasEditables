@@ -165,149 +165,104 @@
     </table>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const agregarLitigioBtn = document.getElementById('agregarLitigioBtn');
-    const asignarBtn = document.getElementById('asignarBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    const estadoSeleccionado = document.getElementById('estadoSeleccionado');
-    const idLitigio = document.getElementById('idLitigio');
-    const bufeteSeleccionado = document.getElementById('bufeteSeleccionado');
-    const tablaLitigios = document.getElementById('tablaLitigios');
-    const estados = document.querySelectorAll('#dropdownMenu li');
-    const tablaAcumulado = document.getElementById('tablaAcumulado');
-    const bufetes = [
-        { nombre: 'LexGlobal Consultores', ubicacion: 'Puebla', juiciosAsignados: 0 },
-        { nombre: 'Justicia y Aliados', ubicacion: 'México', juiciosAsignados: 0 },
-        { nombre: 'Soluciones Legales Integrales', ubicacion: 'Mérida', juiciosAsignados: 0 },
-        { nombre: 'Abogados Unidos', ubicacion: 'Puebla', juiciosAsignados: 0 },
-        { nombre: 'Firma Jurídica Excelencia', ubicacion: 'México', juiciosAsignados: 0 },
-        { nombre: 'Defensores Legales Puebla', ubicacion: 'Puebla', juiciosAsignados: 0 }
-    ];
-
-    function asignarLitigio() {
-        const location = document.getElementById("location").value;
-        const litigio_id = document.getElementById("litigio_id").value;
-        const data = { location: location, litigio_id: litigio_id };
-
-        fetch('/ruleta', {
-            method: 'POST',
-            body: JSON.stringify(data),
-            headers: {
-                'Content-Type': 'application/json'
+        document.addEventListener('DOMContentLoaded', () => {
+            const agregarLitigioBtn = document.getElementById('agregarLitigioBtn');
+            const asignarBtn = document.getElementById('asignarBtn');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const estadoSeleccionado = document.getElementById('estadoSeleccionado');
+            const idLitigio = document.getElementById('idLitigio');
+            const bufeteSeleccionado = document.getElementById('bufeteSeleccionado');
+            const tablaLitigios = document.getElementById('tablaLitigios');
+            const estados = document.querySelectorAll('#dropdownMenu li');
+            const tablaAcumulado = document.getElementById('tablaAcumulado');
+            const bufetes = [
+                { nombre: 'LexGlobal Consultores', ubicacion: 'Puebla', juiciosAsignados: 0 },
+                { nombre: 'Justicia y Aliados', ubicacion: 'México', juiciosAsignados: 0 },
+                { nombre: 'Soluciones Legales Integrales', ubicacion: 'Mérida', juiciosAsignados: 0 },
+                { nombre: 'Abogados Unidos', ubicacion: 'Puebla', juiciosAsignados: 0 },
+                { nombre: 'Firma Jurídica Excelencia', ubicacion: 'México', juiciosAsignados: 0 },
+                { nombre: 'Defensores Legales Puebla', ubicacion: 'Puebla', juiciosAsignados: 0 }
+            ];
+        
+            function generarIdAleatorio(estado) {
+                const caracteres = '0123456789';
+                const longitud = 4;
+                let resultado = '';
+        
+                for (let i = 0; i < longitud; i++) {
+                    resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+                }
+        
+                return `${estado}LIT${resultado}`;
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const juiciosAsignados = data.juiciosAsignados;
-        })
-        .catch(error => console.error(error));
-    }
-
-    asignarBtn.addEventListener('click', asignarLitigio);
-
-    asignarBtn.addEventListener('click', () => {
-    const id = idLitigio.textContent.replace('ID de litigio: ', '');
-    const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
-    const bufete = bufetes.find(b => b.nombre === bufeteSeleccionado.textContent.replace('Bufete seleccionado: ', ''));
-
-    if (id && estado && bufete) {
-        bufete.juiciosAsignados++;
-        agregarLitigioATabla(id, estado, bufete);
-
-        estadoSeleccionado.textContent = '';
-        idLitigio.textContent = '';
-        bufeteSeleccionado.textContent = '';
-    } else {
-        alert('Por favor, seleccione un estado y genere un ID de litigio antes de asignar.');
-    }
-}
-);
-
-    function generarIdAleatorio(estado) {
-        const caracteres = '0123456789';
-        const longitud = 4;
-        let resultado = '';
-
-        for (let i = 0; i < longitud; i++) {
-            resultado += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-        }
-
-        return `${estado}LIT${resultado}`;
-    }
-
-    function seleccionarBufeteAleatorio(estado) {
-    fetch(`/select_bufete?location=${estado}`)
-        .then(response => response.json())
-        .then(bufete => {
-            console.log(bufete);
-            bufeteSeleccionado.textContent = `Bufete seleccionado: ${bufete.nombre}`;
-        })
-        .catch(error => console.log(error));
-}
-    function agregarLitigioATabla(id, estado, bufete) {
-        const fila = document.createElement('tr');
-        fila.innerHTML = `
-            <td>${id}</td>
-            <td>${estado}</td>
-            <td>${bufete.nombre}</td>
-            <td>${bufete.juiciosAsignados}</td>
-        `;
-        tablaLitigios.appendChild(fila);
-
-        actualizarTablaBufetes();
-    }
-
-    function actualizarTablaBufetes() {
-    const juiciosPorBufete = {};
-    bufetes.forEach(bufete => {
-        const key = `${bufete.nombre}-${bufete.ubicacion}`;
-        if (!juiciosPorBufete[key]) {
-            juiciosPorBufete[key] = { total: 0, ubicacion: bufete.ubicacion };
-        }
-        juiciosPorBufete[key].total += bufete.juiciosAsignados;
-    });
-
-    tablaAcumulado.innerHTML = '';
-    Object.keys(juiciosPorBufete).forEach(key => {
-        const bufete = key.split('-')[0];
-        const fila = document.createElement('tr');
-        fila.innerHTML = `
-            <td>${bufete}</td>
-            <td>${juiciosPorBufete[key].ubicacion}</td>
-            <td>${juiciosPorBufete[key].total}</td>
-        `;
-        tablaAcumulado.appendChild(fila);
-    });
-}
-
-    agregarLitigioBtn.addEventListener('click', () => {
-        dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none'
-        : 'block';
-});
-
-document.addEventListener('click', (event) => {
-    if (!agregarLitigioBtn.contains(event.target) && !dropdownMenu.contains(event.target)) {
-        dropdownMenu.style.display = 'none';
-    }
-});
-
-estados.forEach(estado => {
-    estado.addEventListener('click', () => {
-        const estadoTexto = estado.textContent;
-        estadoSeleccionado.textContent = `Estado seleccionado: ${estadoTexto}`;
-        idLitigio.textContent = `ID de litigio: ${generarIdAleatorio(estadoTexto)}`;
-        const bufeteAleatorio = seleccionarBufeteAleatorio(estadoTexto);
-        bufeteSeleccionado.textContent = `Bufete seleccionado: ${bufeteAleatorio.nombre}`;
-        dropdownMenu.style.display = 'none';
-    });
-});
-
-
-
-actualizarTablaBufetes();
-
-});
-    </script>
+        
+            function seleccionarBufeteAleatorio(estado) {
+                return fetch(`/select_bufete?location=${estado}`)
+                    .then(response => response.json())
+                    .then(data => bufetes.find(bufete => bufete.nombre === data.nombre))
+                    .catch(error => console.log(error));
+            }
+        
+            function agregarLitigioATabla(id, estado, bufete) {
+                const fila = document.createElement('tr');
+                fila.innerHTML = `
+                    <td>${id}</td>
+                    <td>${estado}</td>
+                    <td>${bufete.nombre}</td>
+                    <td>${bufete.juiciosAsignados}</td>
+                `;
+                tablaLitigios.appendChild(fila);
+        
+                actualizarTablaBufetes();
+            }
+        
+            function actualizarTablaBufetes() {
+                const juiciosPorBufete = {};
+                bufetes.forEach(bufete => {
+                    const key = `${bufete.nombre}-${bufete.ubicacion}`;
+                    if (!juiciosPorBufete[key]) {
+                        juiciosPorBufete[key] = { total: 0, ubicacion: bufete.ubicacion };
+                    }
+                    juiciosPorBufete[key].total += bufete.juiciosAsignados;
+                });
+        
+                tablaAcumulado.innerHTML = '';
+                Object.keys(juiciosPorBufete).forEach(key => {
+                    const bufete = key.split('-')[0];
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${bufete}</td>
+                        <td>${juiciosPorBufete[key].ubicacion}</td>
+                        <td>${juiciosPorBufete[key].total}</td>
+                    `;
+                    tablaAcumulado.appendChild(fila);
+                });
+            }
+        
+            agregarLitigioBtn.addEventListener('click', () => {
+                dropdownMenu.style.display = 'block';
+            });
+        
+            asignarBtn.addEventListener('click', () => {
+                const id = idLitigio.textContent.split(': ')[1];
+                const estado = estadoSeleccionado.textContent.split(': ')[1];
+                seleccionarBufeteAleatorio(estado).then(bufete => {
+                    bufete.juiciosAsignados++;
+                    agregarLitigioATabla(id, estado, bufete);
+                });
+            });
+        
+            estados.forEach(estado => {
+                estado.addEventListener('click', () => {
+                    const estadoTexto = estado.textContent;
+                    estadoSeleccionado.textContent = `Estado seleccionado: ${estadoTexto}`;
+                    idLitigio.textContent = `ID de litigio: ${generarIdAleatorio(estadoTexto)}`;
+                    dropdownMenu.style.display = 'none';
+                });
+            });
+        });
+        </script>
+        
 </body>
 </html>
 
