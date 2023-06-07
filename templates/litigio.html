@@ -2,7 +2,6 @@
 
 {% block content %}
 
-
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -105,8 +104,6 @@
         }
     </style>
 
-
-
 <table>
     <thead>
         <tr>
@@ -119,12 +116,8 @@
     </tbody>
 </table>
 
-
-
-
 <h2>Directorio de buffetes</h2>
 
-    
     <table>
         <thead>
             <tr>
@@ -160,7 +153,6 @@
         </tbody>
     </table>
 
-
     <script>
     document.addEventListener('DOMContentLoaded', () => {
     const agregarLitigioBtn = document.getElementById('agregarLitigioBtn');
@@ -193,15 +185,11 @@
         return `${estado}LIT${resultado}`;
     }
 
-    //function seleccionarBufeteAleatorio(estado) {
-    //    const bufetesFiltrados = bufetes.filter(bufete => bufete.ubicacion === estado);
-    //    return bufetesFiltrados[Math.floor(Math.random() * bufetesFiltrados.length)];
-    //}
     function seleccionarBufeteAleatorio(estado) {
     fetch(`/select_bufete?location=${estado}`)
         .then(response => response.json())
         .then(bufete => {
-            console.log(bufete); // Add this line to see the returned JSON object
+            console.log(bufete);
             bufeteSeleccionado.textContent = `Bufete seleccionado: ${bufete.nombre}`;
         })
         .catch(error => console.log(error));
@@ -216,12 +204,10 @@
         `;
         tablaLitigios.appendChild(fila);
 
-        // Actualizar tabla de bufetes
         actualizarTablaBufetes();
     }
 
     function actualizarTablaBufetes() {
-    // Obtener total de juicios asignados por bufete y estado
     const juiciosPorBufete = {};
     bufetes.forEach(bufete => {
         const key = `${bufete.nombre}-${bufete.ubicacion}`;
@@ -231,7 +217,6 @@
         juiciosPorBufete[key].total += bufete.juiciosAsignados;
     });
 
-    // Actualizar tabla de bufetes
     tablaAcumulado.innerHTML = '';
     Object.keys(juiciosPorBufete).forEach(key => {
         const bufete = key.split('-')[0];
@@ -267,19 +252,7 @@ estados.forEach(estado => {
         dropdownMenu.style.display = 'none';
     });
 });
-//
-//asignarBtn.addEventListener('click', () => {
-//    const id = idLitigio.textContent.replace('ID de litigio: ', '');
-//    const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
-//    const bufete = bufetes.find(b => b.nombre === bufeteSeleccionado.textContent.replace('Bufete seleccionado: ', ''));
-//
-//    if (id && estado && bufete) {
-//        bufete.juiciosAsignados++;
-//        agregarLitigioATabla(id, estado, bufete);
-//    } else {
-//        alert('Por favor, seleccione un estado y genere un ID de litigio antes de asignar.');
-//    }
-//});
+
 asignarBtn.addEventListener('click', () => {
     const id = idLitigio.textContent.replace('ID de litigio: ', '');
     const estado = estadoSeleccionado.textContent.replace('Estado seleccionado: ', '');
@@ -299,14 +272,7 @@ asignarBtn.addEventListener('click', () => {
 }
 );
 
-
-
-// Actualizar tabla de bufetes al cargar la página
 actualizarTablaBufetes();
-
-
-
-
 
 });
     </script>
